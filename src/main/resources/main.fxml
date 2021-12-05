@@ -59,7 +59,7 @@
                         </AnchorPane>
                         <AnchorPane fx:id="modifiedAnchor" maxHeight="1.7976931348623157E308" prefHeight="355.0" prefWidth="312.0" HBox.hgrow="ALWAYS">
                            <children>
-                              <ImageView fx:id="modifiedImage" nodeOrientation="INHERIT" pickOnBounds="false" preserveRatio="true" />
+                              <ImageView fx:id="modifiedImage" nodeOrientation="INHERIT" pickOnBounds="false" preserveRatio="true"  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                            </children>
                         </AnchorPane>
                      </children>

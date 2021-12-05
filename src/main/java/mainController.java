@@ -29,12 +29,20 @@ public class mainController implements Initializable {
     @FXML
     AnchorPane modifiedAnchor;
 
+    Image original = null;
+    Image modified = null;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         assert originalImage != null : "Fail to inject";
         assert modifiedImage != null : "Fail to inject";
         assert originalAnchor != null : "Fail to inject";
         assert modifiedAnchor != null : "Fail to inject";
+
+        originalImage.setFitWidth(App.getStage().getWidth() / 2);
+        modifiedImage.setFitWidth(App.getStage().getWidth() / 2);
+        originalImage.setPreserveRatio(true);
+        modifiedImage.setPreserveRatio(true);
     }
 
     @FXML
@@ -47,9 +55,9 @@ public class mainController implements Initializable {
         if (file != null) {
             try {
                 FileInputStream fileInputStream = new FileInputStream(file.toString());
-                Image image = new Image(fileInputStream);
+                original = new Image(fileInputStream);
                 originalImage.setFitWidth(originalAnchor.getWidth());
-                originalImage.setImage(image);
+                originalImage.setImage(original);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -112,12 +120,12 @@ public class mainController implements Initializable {
         bMax.setHeaderText("Input value");
         double bHigh = verifyMax(Double.parseDouble(bMax.showAndWait().orElse("255")));
 
-        modifiedImage.setFitWidth(modifiedAnchor.getWidth());
-        List<List<Color>> rgb = ImageConverter.image2RGB(originalImage.getImage());
+        List<List<Color>> rgb = ImageConverter.image2RGB(original);
 
-        modifiedImage.setImage(ImageConverter.rgb2Image(rgb).get());
-
-
+        originalImage.setFitWidth(App.getStage().getWidth() / 2);
+        modifiedImage.setFitWidth(App.getStage().getWidth() / 2);
+        modified = ImageConverter.rgb2Image(rgb).get();
+        modifiedImage.setImage(modified);
     }
 
     @FXML
