@@ -1,5 +1,3 @@
-import com.sun.javafx.image.impl.BaseIntToByteConverter;
-import com.sun.javafx.image.impl.ByteRgb;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.paint.Color;
@@ -37,28 +35,53 @@ public class ImageConverter {
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
                 Color color = pixels.get(j).get(i);
-                int r = (int) color.getRed() * 255;
-                int g = (int) color.getGreen() * 255;
-                int b = (int) color.getBlue() * 255;
                 int rgb = 1;
                 rgb = (int) ((rgb << 8) + color.getRed() * 255);
                 rgb = (int) ((rgb << 8) + color.getGreen() * 255);
                 rgb = (int) ((rgb << 8) + color.getBlue() * 255);
-                /*java.awt.Color color1 = new java.awt.Color(r, g, b);
-                int rgb = color1.getRGB();*/
-                //int rgb = 65536 * r + 256 * g + b;
-                /*int rgb = ((r&0x0ff)<<16)|((g&0x0ff)<<8)|(b&0x0ff);*/
+
                 image.setRGB(j, i, rgb);
             }
         }
         try {
-            ImageIO.write(image,"png",new File("tmp.png"));
+            ImageIO.write(image, "png", new File("tmp.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        FileInputStream fileInputStream = null;
+
         try {
-            fileInputStream = new FileInputStream("tmp.png");
+            FileInputStream fileInputStream = new FileInputStream("tmp.png");
+            Image result = new Image(fileInputStream);
+            return Optional.of(result);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<Image> rgb2ImageAwt(List<List<java.awt.Color>> pixels) {
+        int width = pixels.size();
+        int height = pixels.get(0).size();
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < width; ++j) {
+                java.awt.Color color = pixels.get(j).get(i);
+                int rgb = 1;
+                rgb = (rgb << 8) + color.getRed();
+                rgb = (rgb << 8) + color.getGreen();
+                rgb = (rgb << 8) + color.getBlue();
+
+                image.setRGB(j, i, rgb);
+            }
+        }
+        try {
+            ImageIO.write(image, "png", new File("tmp.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream("tmp.png");
             Image result = new Image(fileInputStream);
             return Optional.of(result);
         } catch (FileNotFoundException e) {

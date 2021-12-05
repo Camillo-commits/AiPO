@@ -1,12 +1,14 @@
+import com.sun.javafx.stage.PopupWindowHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.PopupWindow;
 
-import javax.imageio.stream.ImageInputStream;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -80,6 +82,36 @@ public class mainController implements Initializable {
 
     @FXML
     private void modifyRGB() {
+        TextInputDialog rMin = new TextInputDialog("R min");
+        rMin.setHeaderText("Input value");
+        rMin.setContentText("R min");
+        double rLow = verifyMin(Double.parseDouble(rMin.showAndWait().orElse("0")));
+
+        TextInputDialog rMax = new TextInputDialog("R high");
+        rMax.setHeaderText("Input value");
+        rMax.setContentText("R high");
+        double rHigh = verifyMax(Double.parseDouble(rMax.showAndWait().orElse("255")));
+
+        TextInputDialog gMin = new TextInputDialog("G min");
+        gMin.setHeaderText("Input value");
+        gMin.setContentText("G min");
+        double gLow = verifyMin(Double.parseDouble(gMin.showAndWait().orElse("0")));
+
+        TextInputDialog gMax = new TextInputDialog("G high");
+        gMax.setContentText("G high");
+        gMax.setHeaderText("Input value");
+        double gHigh = verifyMax(Double.parseDouble(gMax.showAndWait().orElse("255")));
+
+        TextInputDialog bMin = new TextInputDialog("B min");
+        bMin.setHeaderText("Input value");
+        bMin.setContentText("B min");
+        double bLow = verifyMin(Double.parseDouble(bMin.showAndWait().orElse("0")));
+
+        TextInputDialog bMax = new TextInputDialog("B high");
+        bMax.setContentText("B high");
+        bMax.setHeaderText("Input value");
+        double bHigh = verifyMax(Double.parseDouble(bMax.showAndWait().orElse("255")));
+
         modifiedImage.setFitWidth(modifiedAnchor.getWidth());
         List<List<Color>> rgb = ImageConverter.image2RGB(originalImage.getImage());
 
@@ -96,5 +128,13 @@ public class mainController implements Initializable {
     @FXML
     private void modifyCieLAB() {
 
+    }
+
+    private double verifyMin(double min) {
+        return min < 0 ? 0: min;
+    }
+
+    private double verifyMax(double max) {
+        return max > 255 ? 255 : max;
     }
 }
