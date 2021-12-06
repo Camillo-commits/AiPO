@@ -1,4 +1,4 @@
-import com.sun.javafx.stage.PopupWindowHelper;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextInputDialog;
@@ -7,7 +7,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.stage.PopupWindow;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -31,7 +30,9 @@ public class mainController implements Initializable {
 
     Image original = null;
     Image modified = null;
-
+    ImageSegmentator imageSegmentatorHsv;
+    ImageSegmentator imageSegmentatorRgb;
+    ImageSegmentator imageSegmentatorCIELab;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         assert originalImage != null : "Fail to inject";
@@ -43,6 +44,10 @@ public class mainController implements Initializable {
         modifiedImage.setFitWidth(App.getStage().getWidth() / 2);
         originalImage.setPreserveRatio(true);
         modifiedImage.setPreserveRatio(true);
+
+        imageSegmentatorHsv = new HSVSegmentation();
+        imageSegmentatorRgb = new RGBSegmentation();
+        imageSegmentatorCIELab = new CIELabSegmentation();
     }
 
     @FXML
@@ -62,6 +67,7 @@ public class mainController implements Initializable {
                 e.printStackTrace();
             }
         }
+        Histogram.showHistogram(SwingFXUtils.fromFXImage(original, null));
     }
 
     @FXML
@@ -90,52 +96,85 @@ public class mainController implements Initializable {
 
     @FXML
     private void modifyRGB() {
-        TextInputDialog rMin = new TextInputDialog("R min");
-        rMin.setHeaderText("Input value");
-        rMin.setContentText("R min");
-        double rLow = verifyMin(Double.parseDouble(rMin.showAndWait().orElse("0")));
+        TextInputDialog redValueDialog = new TextInputDialog("RED VALUE");
+        redValueDialog.setHeaderText("Input value");
+        redValueDialog.setContentText("RED VALUE");
+        double redValue = verifyMin(Double.parseDouble(redValueDialog.showAndWait().orElse("1")));
 
-        TextInputDialog rMax = new TextInputDialog("R high");
-        rMax.setHeaderText("Input value");
-        rMax.setContentText("R high");
-        double rHigh = verifyMax(Double.parseDouble(rMax.showAndWait().orElse("255")));
+        TextInputDialog greenValueDialog = new TextInputDialog("GREEN VALUE");
+        greenValueDialog.setHeaderText("Input value");
+        greenValueDialog.setContentText("GREEN VALUE");
+        double greenValue = verifyMax(Double.parseDouble(greenValueDialog.showAndWait().orElse("1")));
 
-        TextInputDialog gMin = new TextInputDialog("G min");
-        gMin.setHeaderText("Input value");
-        gMin.setContentText("G min");
-        double gLow = verifyMin(Double.parseDouble(gMin.showAndWait().orElse("0")));
+        TextInputDialog blueValueDialog = new TextInputDialog("BLUE VALUE");
+        blueValueDialog.setHeaderText("Input value");
+        blueValueDialog.setContentText("BLUE VALUE");
+        double blueValue = verifyMin(Double.parseDouble(blueValueDialog.showAndWait().orElse("1")));
 
-        TextInputDialog gMax = new TextInputDialog("G high");
-        gMax.setContentText("G high");
-        gMax.setHeaderText("Input value");
-        double gHigh = verifyMax(Double.parseDouble(gMax.showAndWait().orElse("255")));
-
-        TextInputDialog bMin = new TextInputDialog("B min");
-        bMin.setHeaderText("Input value");
-        bMin.setContentText("B min");
-        double bLow = verifyMin(Double.parseDouble(bMin.showAndWait().orElse("0")));
-
-        TextInputDialog bMax = new TextInputDialog("B high");
-        bMax.setContentText("B high");
-        bMax.setHeaderText("Input value");
-        double bHigh = verifyMax(Double.parseDouble(bMax.showAndWait().orElse("255")));
+        TextInputDialog euclidDistDialog = new TextInputDialog("Pixel distance");
+        euclidDistDialog.setContentText("Input value");
+        euclidDistDialog.setHeaderText("Pixel distance");
+        double euclidDist = verifyMax(Double.parseDouble(euclidDistDialog.showAndWait().orElse("1")));
 
         List<List<Color>> rgb = ImageConverter.image2RGB(original);
 
+        modifiedImage.setImage(modified);
         originalImage.setFitWidth(App.getStage().getWidth() / 2);
         modifiedImage.setFitWidth(App.getStage().getWidth() / 2);
-        modified = ImageConverter.rgb2Image(rgb).get();
+        modified = imageSegmentatorRgb.segmentate(original,(float) redValue,(float) greenValue, (float)blueValue, (float)euclidDist);
         modifiedImage.setImage(modified);
     }
 
     @FXML
     private void modifyHSV() {
+        TextInputDialog hueValueDialog = new TextInputDialog("Lum VALUE");
+        hueValueDialog.setHeaderText("Input value");
+        hueValueDialog.setContentText("hue VALUE");
+        double hueValue = verifyMin(Double.parseDouble(hueValueDialog.showAndWait().orElse("1")));
 
+        TextInputDialog satValueDialog = new TextInputDialog("Saturation VALUE");
+        satValueDialog.setHeaderText("Input value");
+        satValueDialog.setContentText("Saturation VALUE");
+        double satValue = verifyMax(Double.parseDouble(satValueDialog.showAndWait().orElse("1")));
+
+        TextInputDialog euclidDistDialog = new TextInputDialog("Pixel distance");
+        euclidDistDialog.setContentText("Input value");
+        euclidDistDialog.setHeaderText("Pixel distance");
+        double euclidDist = verifyMax(Double.parseDouble(euclidDistDialog.showAndWait().orElse("1")));
+
+        List<List<Color>> rgb = ImageConverter.image2RGB(original);
+        originalImage.setFitWidth(App.getStage().getWidth() / 2);
+        modifiedImage.setFitWidth(App.getStage().getWidth() / 2);
+        modified = imageSegmentatorHsv.segmentate(original,(float) hueValue,(float) satValue,0,(float) euclidDist);
+        modifiedImage.setImage(modified);
     }
 
     @FXML
     private void modifyCieLAB() {
+        TextInputDialog lValueDialog = new TextInputDialog("L VALUE");
+        lValueDialog.setHeaderText("Input value");
+        lValueDialog.setContentText("L VALUE");
+        double lValue = verifyMin(Double.parseDouble(lValueDialog.showAndWait().orElse("1")));
 
+        TextInputDialog aValueDialog = new TextInputDialog("A VALUE");
+        aValueDialog.setHeaderText("Input value");
+        aValueDialog.setContentText("A VALUE");
+        double aValue = verifyMax(Double.parseDouble(aValueDialog.showAndWait().orElse("1")));
+
+        TextInputDialog bValueDialog = new TextInputDialog("B VALUE");
+        bValueDialog.setHeaderText("Input value");
+        bValueDialog.setContentText("B VALUE");
+        double bValue = verifyMax(Double.parseDouble(aValueDialog.showAndWait().orElse("1")));
+
+        TextInputDialog euclidDistDialog = new TextInputDialog("Pixel distance");
+        euclidDistDialog.setContentText("Input value");
+        euclidDistDialog.setHeaderText("Pixel distance");
+        double euclidDist = verifyMax(Double.parseDouble(euclidDistDialog.showAndWait().orElse("1")));
+
+        originalImage.setFitWidth(App.getStage().getWidth() / 2);
+        modifiedImage.setFitWidth(App.getStage().getWidth() / 2);
+        modified = imageSegmentatorCIELab.segmentate(original,(float) lValue,(float) aValue,(float) bValue,(float) euclidDist);
+        modifiedImage.setImage(modified);
     }
 
     private double verifyMin(double min) {

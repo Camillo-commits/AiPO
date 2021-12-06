@@ -1,3 +1,6 @@
+import boofcv.alg.color.ColorHsv;
+import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.Planar;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.paint.Color;
@@ -89,4 +92,9 @@ public class ImageConverter {
         }
         return Optional.empty();
     }
+    public static void processRgbChannels(Planar<GrayF32> input , Planar<GrayF32> output){
+        ColorHsv.rgbToHsv(input, output);
+        ColorHsv.hsvToRgb(output, input);
+    }
+
 }

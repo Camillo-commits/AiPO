@@ -18,6 +18,8 @@ public class App extends Application {
         scene = new Scene(loadFXML("main"));
 //        stage.getIcons().add(new Image(App.class.getResourceAsStream("icon.png")));
         primaryStage.setTitle("AiPO");
+        primaryStage.setWidth(1200);
+        primaryStage.setHeight(800);
         primaryStage.setScene(scene);
         primaryStage.setResizable(true);
         primaryStage.show();
