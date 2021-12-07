@@ -13,9 +13,6 @@ import java.util.Map;
 public class Calculations {
     private static String exmp = "https://i.imgur.com/S1pTI7I.png";
 
-    public static void main(String[] args) {
-
-    }
 
     public static BufferedImage loadImage(String url) {
         try {

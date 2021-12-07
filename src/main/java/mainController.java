@@ -116,13 +116,14 @@ public class mainController implements Initializable {
         euclidDistDialog.setHeaderText("Pixel distance");
         double euclidDist = verifyMax(Double.parseDouble(euclidDistDialog.showAndWait().orElse("1")));
 
-        List<List<Color>> rgb = ImageConverter.image2RGB(original);
 
         modifiedImage.setImage(modified);
         originalImage.setFitWidth(App.getStage().getWidth() / 2);
         modifiedImage.setFitWidth(App.getStage().getWidth() / 2);
         modified = imageSegmentatorRgb.segmentate(original,(float) redValue,(float) greenValue, (float)blueValue, (float)euclidDist);
         modifiedImage.setImage(modified);
+        List<List<Color>> rgb = ImageConverter.image2RGB(modified);
+        ImageConverter.rgb2Image(rgb);
     }
 
     @FXML
@@ -142,11 +143,13 @@ public class mainController implements Initializable {
         euclidDistDialog.setHeaderText("Pixel distance");
         double euclidDist = verifyMax(Double.parseDouble(euclidDistDialog.showAndWait().orElse("1")));
 
-        List<List<Color>> rgb = ImageConverter.image2RGB(original);
+
         originalImage.setFitWidth(App.getStage().getWidth() / 2);
         modifiedImage.setFitWidth(App.getStage().getWidth() / 2);
         modified = imageSegmentatorHsv.segmentate(original,(float) hueValue,(float) satValue,0,(float) euclidDist);
         modifiedImage.setImage(modified);
+        List<List<Color>> rgb = ImageConverter.image2RGB(modified);
+        ImageConverter.rgb2Image(rgb);
     }
 
     @FXML
@@ -175,6 +178,8 @@ public class mainController implements Initializable {
         modifiedImage.setFitWidth(App.getStage().getWidth() / 2);
         modified = imageSegmentatorCIELab.segmentate(original,(float) lValue,(float) aValue,(float) bValue,(float) euclidDist);
         modifiedImage.setImage(modified);
+        List<List<Color>> rgb = ImageConverter.image2RGB(modified);
+        ImageConverter.rgb2Image(rgb);
     }
 
     private double verifyMin(double min) {
