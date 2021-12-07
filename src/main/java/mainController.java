@@ -77,7 +77,7 @@ public class mainController implements Initializable {
         fileChooser.getExtensionFilters().add(extensionFilter);
 
         File file = fileChooser.showSaveDialog(App.getStage());
-        File image = new File(modifiedImage.getImage().getUrl());
+        File image = new File("tmp.png");
 
         final String path = file != null ? file.toString() : "modifiedImage";
         FileOutputStream fileOutputStream = null;
